@@ -14,12 +14,6 @@ code {
     monospace;
 }
 
-button {
-  width: 100px;
-  height: 30px;
-  background: white;
-  border-radius: 6px;
-}
 h1 {
   font-size: 40px;
   margin: 20px;
