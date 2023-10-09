@@ -1,28 +1,11 @@
-const ContactList = ({ setState, state }) => {
-  const {contacts, filter} = state;
-
-  const filteredContacts = () => {
-    let result = contacts
-    
-    if(filter !== '') {
-      result = contacts.filter(({name}) => name.toLowerCase().includes(filter.toLowerCase()))
-    }
-    
-    return result
-  }
-
-  const deleteContact = (deleteId) => {
-    const result = contacts.filter(({id}) => id !== deleteId)
-    setState({...state, contacts: result})
-  }
-
+const ContactList = ({contacts, onDeleteContact }) => {
   return (
     <>
       <ul className="list">
-        {filteredContacts().map(({id, name, number}) => {
+        {contacts.map(({id, name, number}) => {
           return (
             <li key={id}>
-              <span>{name}</span>: <span>{number}</span> <button onClick={() => deleteContact(id)}>Delete</button>
+              <span>{name}</span>: <span>{number}</span> <button onClick={() => onDeleteContact(id)}>Delete</button>
             </li>
           )
         })}

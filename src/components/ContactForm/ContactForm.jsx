@@ -1,41 +1,45 @@
-import { nanoid } from 'nanoid';
+import { Formik, Field } from 'formik';
+import * as Yup from 'yup';
+import { ErrMessage, StyledForm, FormGroup, FormButton } from './ContactForm.styled';
 
-const ContactForm = ({setState, state}) => {
+const contactSchema = Yup.object().shape({
+    name: Yup.string().min(3, 'Too short!').required('This field is required!'),
+    number: Yup.number()
+    .positive()
+    .required('This field is required!'),
+  });
 
-    const addCantact = (event) => {
-        event.preventDefault();
-        const newName = event.currentTarget[0].value;
-        const number = event.currentTarget[1].value;
-    
-        if (state.contacts.filter(({name}) => name.toLowerCase() === newName.toLowerCase()).length > 0) {
-            alert(`${newName} is already in contacts`);
-            return;
-        }
+const ContactForm = ({onAddContact}) => {
 
-        const data = {
-          id: nanoid(),
-          name: newName,
-          number: number
-        }
-    
-        setState({...state, contacts: [...state.contacts, data]})
-      }
-
-    return (
-        <>
-            <form className='phonebook' onSubmit={addCantact}>
-                <div className="formGroup">
-                <label style={{display: 'block'}}>Name</label>
-                <input className='input' type="text" name="name" required id="name"/>
-                </div>
-                <div className="formGroup">
-                <label style={{display: 'block'}}>Number</label>
-                <input className='input' type="tel" name="number" id="number" required/>
-                </div>
-                <button className='button' type="submit">Add contact</button>
-            </form>
-        </>
-    )
+  return (
+    <>
+      <Formik 
+        initialValues={{
+          name: '',
+          number: 0,
+        }}
+        validationSchema={contactSchema}
+        onSubmit={(values, actions) => {
+            onAddContact(values);
+            actions.resetForm();
+          }}
+      >
+        <StyledForm>
+          <FormGroup>
+            <label htmlFor="name" style={{display: 'block'}}>Name</label>
+            <Field className='input' name="name" id="name" />
+            <ErrMessage name="name" component="div" />
+          </FormGroup>
+          <FormGroup>
+            <label htmlFor="number" style={{display: 'block'}}>Number</label>
+            <Field className='input' name="number" id="number" />
+            <ErrMessage name="number" component="div" />
+          </FormGroup>
+          <FormButton type="submit">Add contact</FormButton>
+        </StyledForm>
+      </Formik>
+    </>
+  )
 }
 
 export default ContactForm

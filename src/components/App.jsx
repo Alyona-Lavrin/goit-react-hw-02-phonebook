@@ -1,34 +1,84 @@
-import { useState } from "react";
+import { Component } from "react";
+import { nanoid } from 'nanoid';
 import ContactForm from './ContactForm/ContactForm';
 import Filter from './Filter/Filter';
 import ContactList from './ContactList/ContactList'
 
-export const App = () => {
+export class App extends Component {
 
-  const [state, setState] = useState(
-    {
-      contacts: [],
-      filter: '',
+  state = {
+    contacts: [],
+    filter: '',
+  };
+
+  addCantact = (value) => {
+    const { contacts } = this.state;
+
+    if (contacts.filter(({name}) => name.toLowerCase() === value.name.toLowerCase()).length > 0) {
+      alert(`${value.name} is already in contacts`);
+      return;
     }
-  );
 
-  return (
-    <div
-      style={{
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'column',
-        fontSize: 40,
-        color: '#010101'
-      }}
-    >
-      <h1>Phonebook</h1>
-      <ContactForm setState={setState} state={state}/>
-      <h2>Contacts</h2>
-      <Filter setState={setState} state={state}/>
-      <ContactList setState={setState} state={state}/>
-    </div>
-  );
-};
+    const data = {
+      id: nanoid(),
+      name: value.name,
+      number: value.number
+    }
+
+    this.setState(prevState => ({
+      contacts: [...prevState.contacts, data],
+    }));
+  }
+
+  getVisibleItems = () => {
+    const { contacts, filter } = this.state;
+
+    let result = contacts
+    
+    if(filter !== '') {
+      result = contacts.filter(({name}) => name.toLowerCase().includes(filter.toLowerCase()))
+    }
+    
+    return result;
+  };
+
+  deleteContact = (deleteId) => {
+    const { contacts } = this.state;
+
+    const result = contacts.filter(({id}) => id !== deleteId)
+    this.setState(() => ({
+      contacts: result,
+    }));
+  }
+
+  setFilter = (string) => {
+    this.setState(() => ({
+      filter: string,
+    }));
+  }
+  
+
+  render() {
+    const visibleItems = this.getVisibleItems();
+    
+    return (
+      <div
+        style={{
+          height: '100vh',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'column',
+          fontSize: 40,
+          color: '#010101'
+        }}
+      >
+        <h1>Phonebook</h1>
+        <ContactForm onAddContact={this.addCantact} />
+        <h2>Contacts</h2>
+        <Filter onFilterContact={this.setFilter}/>
+        <ContactList contacts={visibleItems} onDeleteContact={this.deleteContact}/>
+      </div>
+    );
+  };
+}

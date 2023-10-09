@@ -1,9 +1,9 @@
-const Filter = ({setState, state}) => {
+const Filter = ({onFilterContact}) => {
     return (
         <div className="filter-wrap">
             <p className="text">Find contacts by name</p>
             <input className="inpuText" type="text" name="" id="" onChange={(e) => {
-                setState({...state, filter: e.currentTarget.value})
+                onFilterContact(e.currentTarget.value)
             }}/>
         </div>
     )
